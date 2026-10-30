@@ -87,6 +87,35 @@ plt.imshow(swatch.astype(np.uint8));
   2. Ask GitHub Support to detach the fork, then make it private.
   3. Keep it public and add `NOTES.md` to `.gitignore`. OneDrive still syncs it, but there's no GitHub backup.
 
+### Broken venv: "uv trampoline failed to spawn Python" (2026-10-30)
+
+- Symptom: VS Code asks to install `ipykernel` and shows a strange version ("Python 3.13.-1"). Running `.venv\Scripts\python.exe` fails with `uv trampoline failed to spawn Python child process`.
+- Cause: OneDrive had synced `.venv` from my other machine. A venv stores the **absolute path** of the Python it was built from (see `home = ...` in `.venv\pyvenv.cfg`). Here that was `C:\Users\station.plus\...`, which doesn't exist on this machine.
+- ⚠️ A venv only works on the machine that created it, so it must not be synced. Machines share `pyproject.toml` and `uv.lock` (tracked by git), and each one builds its own venv with `uv sync`.
+- uv venvs have no `pip`. Add packages with `uv add <pkg>`.
+- Git ignores `.venv` already, because uv puts a `.gitignore` containing `*` inside it. Check with `git status --ignored` (`!!` = ignored). OneDrive ignores nothing and syncs every file in the folder.
+
+**Fix:** keep the venv outside OneDrive. Do this once per machine, in the project folder:
+
+```powershell
+# Windows (PowerShell)
+[Environment]::SetEnvironmentVariable("UV_PROJECT_ENVIRONMENT", "$env:LOCALAPPDATA\uv-venvs\cas-aicp-m4", "User")  # permanent
+$env:UV_PROJECT_ENVIRONMENT = "$env:LOCALAPPDATA\uv-venvs\cas-aicp-m4"  # current window
+uv sync
+```
+
+```bash
+# macOS/Linux: add to ~/.zshrc or ~/.bashrc
+export UV_PROJECT_ENVIRONMENT="$HOME/.venvs/cas-aicp-m4"
+# then: source ~/.zshrc && uv sync
+```
+
+- Then restart VS Code completely. It only reads environment variables at startup.
+- **Select Kernel → Python Environments**, or choose **Enter interpreter path**:
+  - Windows: `C:\Users\sevi\AppData\Local\uv-venvs\cas-aicp-m4\Scripts\python.exe`
+  - macOS: `~/.venvs/cas-aicp-m4/bin/python`
+- Done on this Windows machine (2026-10-30). ⚠️ Still to do on the other machine.
+
 ## ❓ Questions for teacher
 
 None yet.
