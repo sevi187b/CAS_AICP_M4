@@ -5,18 +5,29 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "accelerate>=1.15.0",
+    "bitsandbytes>=0.50.2",
+    "clip",
+    "diffusers>=0.42.1",
+    "ipykernel>=7.4.0",
     "jupyterlab>=4.6.4",
+    "lap>=0.5.13",
     "matplotlib>=3.11.2",
     "napari-skimage>=0.7.1",
     "napari[pyqt6]>=0.9.2",
     "numpy>=2.5.4",
     "openai>=3.37.0",
+    "pandas>=3.1.0",
     "pillow>=13.0.0",
+    "pytubefix>=11.2.1",
     "replicate>=1.0.7",
     "scikit-image>=0.26.0",
+    "timm>=1.0.30",
     "torch>=2.14.1",
     "torchvision>=0.29.1",
+    "transformers>=5.22.1",
     "ultralytics>=8.4.184",
+    "yt-dlp>=2026.10.26",
 ]
 
 [project.scripts]
@@ -25,3 +36,6 @@ cas-aicp-m4 = "cas_aicp_m4:main"
 [build-system]
 requires = ["uv_build>=0.13.5,<0.14.0"]
 build-backend = "uv_build"
+
+[tool.uv.sources]
+clip = { git = "https://github.com/ultralytics/CLIP.git" }
